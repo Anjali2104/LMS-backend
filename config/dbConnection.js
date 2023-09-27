@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
 
+import mongoose from 'mongoose';
 /**
  * mongoose.set("strictQuery", false); sets Mongoose's query strictness to false.
  * This means that Mongoose will not return an error if you try to query for a
@@ -23,4 +23,4 @@ const connectToDB = async () => {
     }
 }
 
-module.exports = connectToDB;
+export default connectToDB;

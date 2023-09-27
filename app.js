@@ -1,11 +1,9 @@
-// import cookieParser from "cookie-parser";
-// import express from "express";
-// import cors from 'cors';
-const express = require('express')
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const userRoutes = require('./routes/userRoutes');
-const errorMiddleware = require('./middlewares/errorMiddleware');
+import cookieParser from "cookie-parser";
+import express from "express";
+import cors from 'cors';
+import userRoutes from './routes/userRoutes.js'
+import errorMiddleware from "./middlewares/errorMiddleware.js";
+
 const app = express();
 
 app.use(express.json());
@@ -27,4 +25,4 @@ app.all('*', (req,res) => {
 
 app.use(errorMiddleware);
 
-module.exports = app;
+export default app;

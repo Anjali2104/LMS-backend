@@ -1,5 +1,5 @@
-const User = require("../models/userModel");
-const { default: AppError } = require("../utils/appError");
+import User from "../models/userModel.js";
+import AppError from "../utils/appError.js";
 
 const cookieOptions = {
   secure: true,
@@ -89,11 +89,18 @@ const logout = (req,res) => {
   })
 }
 
-const getProfile = (req,res) => {
+const getProfile =  async (req,res) => {
+   const user =  await User.findById(req.user.id);
+
+   res.status(200).json({
+    success:true,
+    message:"User details",
+    user
+   })
 
 }
 
-module.exports = {
+export {
     register,
     login,
     logout,
