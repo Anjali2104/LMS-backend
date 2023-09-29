@@ -3,6 +3,7 @@ import express from "express";
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js'
 import errorMiddleware from "./middlewares/errorMiddleware.js";
+import morgan from "morgan";
 
 const app = express();
 
@@ -12,7 +13,11 @@ app.use(cors({
     origin:[process.env.FRONTED_URL],
     credential:true
 }));
+
+app.use(morgan('dev'));
+
 app.use(cookieParser());
+
 app.use('/ping', (req,res) => {
     res.send('pong')
 })
