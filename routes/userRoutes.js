@@ -1,5 +1,5 @@
 import  express from 'express';
-import { register, login, logout, getProfile } from '../controllers/userController.js';
+import { register, login, logout, getProfile, forgotPassword, resetPassword } from '../controllers/userController.js';
 import { isLoggedIn } from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/multerMiddleware.js';
 
@@ -10,6 +10,8 @@ router.post('/register', upload.single('avatar') , register);
 router.post('/login', login);
 router.get('/logout', logout);
 router.get('/me', isLoggedIn, getProfile );
+router.post('/reset', forgotPassword);
+router.post('/reset/:resetToken', resetPassword);
 
 
 export default router;
