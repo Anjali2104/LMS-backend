@@ -14,14 +14,21 @@ router
     .route('/')
     .get(getAllCourses)
     .post(
+        isLoggedIn,
         upload.single('thumbnail'),
         createCourse
     );
 
 router
     .route('/:courseId')
-    .get( isLoggedIn, getLecturesByCourseId)
-    .put(updateCourse)
-    .delete(deleteCourse);
+    .get( 
+        isLoggedIn, 
+        getLecturesByCourseId)
+    .put(
+        isLoggedIn,
+        updateCourse)
+    .delete(
+        isLoggedIn,
+        deleteCourse);
 
 export default router;
