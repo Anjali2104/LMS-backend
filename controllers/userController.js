@@ -13,18 +13,21 @@ const cookieOptions = {
 }
 
 const register = async(req,res,next) => {
+  // Destructuring the necessary data from req object
   const { fullName, email, password} = req.body;
 
+   // Check if the data is there or not, if not throw error message
   if(!fullName || !email || !password){
     return next(new AppError('All fields are required', 400) );
   }
-
+ 
+  // Finding the user with the sent email
   const userExists = await User.findOne({email});
   if(userExists){
     return next(new AppError('Email already exits', 400));
   }
 
-  const user = User.create({
+  const user = await User.create({
     fullName,
     email,
     password,
@@ -45,7 +48,7 @@ const register = async(req,res,next) => {
  if(req.file){
   try {
     const result = await cloudinary.v2.uploader.upload(req.file.path ,{
-      folder:lms,   // Save files in a folder named lms
+      folder:'lms',   // Save files in a folder named lms
       width:250,
       height:250,
       gravity:'faces',  // This option tells cloudinary to center the image around detected faces (if any) after cropping or resizing the original image
@@ -109,8 +112,8 @@ const login = async (req,res,next) => {
     const token = user.generateJWTToken();
 
     // Setting the password to undefined so it does not get sent in the response
-
     user.password = undefined;
+
     // Setting the token in the cookie with name token along with cookieOptions
     
     res.cookie('token', token, cookieOptions);
