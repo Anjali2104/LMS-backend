@@ -2,6 +2,7 @@ import { Router } from "express";
 import { addLectureToCourseById, 
     createCourse, 
     deleteCourse, 
+    deleteLectureToCourseById, 
     getAllCourses,
     getLecturesByCourseId, 
     updateCourse } 
@@ -35,12 +36,17 @@ router
         isLoggedIn,
         authorizedRoles('ADMIN'),
         deleteCourse)
-    // .post(
-    //     isLoggedIn,
-    //     authorizedRoles('ADMIN'),
-    //     upload.single('thumbnail'),
-    //     addLectureToCourseById,
-    // )
+    .post(
+        isLoggedIn,
+        authorizedRoles('ADMIN'),
+        upload.single('lecture'),
+        addLectureToCourseById,
+    )
+    .delete(
+        isLoggedIn,
+        authorizedRoles('ADMIN'),
+        deleteLectureToCourseById,
+    )
     ;
 
 export default router;
