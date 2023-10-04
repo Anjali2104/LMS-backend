@@ -1,6 +1,6 @@
-import Payment from "../models/paymentModel";
-import User from "../models/userModel,js";
-import { razorpay } from "../server";
+import Payment from "../models/paymentModel.js";
+import User from "../models/userModel.js";
+import { razorpay } from "../server.js";
 import AppError from "../utils/appError.js"
 import crypto from 'crypto';
 
@@ -103,7 +103,35 @@ export const verifySubscription = async(req, res, next) => {
 
 export const cancelSubscription = async(req, res, next) => {
     try {
-    
+        const { id } = req.user;
+        const user = await User.findById({id});
+  
+        if(!user){
+          return next(
+              new AppError('Unauthorized, please login!', 500)
+          )
+        }
+
+        if(user.role === 'ADMIN'){
+            return next(
+                new AppError('ADMIN cannot cancel subscription', 500)
+            )
+        }
+
+        const subscriptionId = user.subscription.id;
+        const subscription = await razorpay.subscriptions.cancel({
+            subscriptionId,
+        });
+
+        user.subscription.status = subscription.status;
+
+        await user.save();
+
+        res.status(200).json({
+            success:true,
+            message:'Subscription cancelled!'
+        });
+
     } catch (error) {
       return next(new AppError(error.message, 500));
     }
@@ -111,7 +139,17 @@ export const cancelSubscription = async(req, res, next) => {
 
 export const getAllPayments = async(req, res, next) => {
     try {
-    
+      const { count } = req.query;
+
+      const subscription = await razorpay.subscriptions.all({
+        count: count || 10,
+      });
+
+      res.status(200).json({
+        success:true,
+        message:'All payments',
+        payments:subscription,
+      })
     } catch (error) {
       return next(new AppError(error.message, 500));
     }
