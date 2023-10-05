@@ -61,14 +61,14 @@ userSchema.methods = {
     comparePassword: async function(plainTextPassword){
         return await bcrypt.compare(plainTextPassword, this.password);
     },
-    generateJWTToken : function(){
-        return jwt.sign(
+    generateJWTToken :  async function(){
+        return  await jwt.sign(
             { id: this._id, role: this.role, email: this.email, subscription: this.subscription},
             process.env.JWT_SECRET,
             {
                 expiresIn: process.env.JWT_EXPIRY
             }
-        )
+        );
     },
     generatePasswordToken: async function(){
         const resetToken = crypto.randomBytes(20).toString('hex');
@@ -82,7 +82,7 @@ userSchema.methods = {
 
         return resetToken;
     }
-}
+};
 
 const User = model('User', userSchema);
 export default User;

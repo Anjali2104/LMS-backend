@@ -1,8 +1,8 @@
 import User from "../models/userModel.js";
 import AppError from "../utils/appError.js";
-import cloudinary from 'cloudinary';
 import fs from 'fs/promises';
 import crypto from 'crypto';
+import cloudinary from "cloudinary"
 import sendEmail from "../utils/sendEmail.js";
 
 
@@ -46,15 +46,17 @@ const register = async(req,res,next) => {
  
   // Run only if user sends a file
  if(req.file){
+ // console.log(req.file)
   try {
-    const result = await cloudinary.v2.uploader.upload(req.file.path ,{
+    const result = await cloudinary.v2.uploader.upload( req.file.path,{
+      resource_type:"image",
       folder:'lms',   // Save files in a folder named lms
       width:250,
       height:250,
       gravity:'faces',  // This option tells cloudinary to center the image around detected faces (if any) after cropping or resizing the original image
       crop:'fill',
     });
-
+console.log(result)
     // If success
     if(result){
       // Set the public_id and secure_url in DB
@@ -73,7 +75,7 @@ const register = async(req,res,next) => {
   await user.save();
 
   // Generating a JWT token
-  const token = user.generateJWTToken();
+  const token = await user.generateJWTToken();
     
   // Setting the password to undefined so it does not get sent in the response
   user.password = undefined;
@@ -96,20 +98,22 @@ const login = async (req,res,next) => {
     const { email, password} = req.body;
 
      // Check if the data is there or not, if not throw error message
+    //  console.log(email, password);
     if( !email || !password){
       return next(new AppError('All fields are required', 400) );
     }
     
     // Finding the user with the sent email
-    const user = User.findOne({email}).select('+password');
+    const user = await User.findOne({email}).select('+password');
 
     // If no user or sent password do not match then send generic response
-    if(!user || !user.comparePassword(password)){
+    if(!(user || (await user. comparePassword(password)) )){
         return next(new AppError('Email or password do not match', 400));
     }
     
     // Generating a JWT token
-    const token = user.generateJWTToken();
+    const token =  await user.generateJWTToken();
+    console.log(token);
 
     // Setting the password to undefined so it does not get sent in the response
     user.password = undefined;
