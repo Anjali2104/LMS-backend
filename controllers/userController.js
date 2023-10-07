@@ -98,7 +98,7 @@ const login = async (req,res,next) => {
     const { email, password} = req.body;
 
      // Check if the data is there or not, if not throw error message
-    //  console.log(email, password);
+    console.log(email, password);
     if( !email || !password){
       return next(new AppError('All fields are required', 400) );
     }

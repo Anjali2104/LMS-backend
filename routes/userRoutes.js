@@ -16,7 +16,7 @@ import upload from '../middlewares/multerMiddleware.js';
 const router = express.Router();
 router.post('/register', upload.single('avatar') , register);
 router.post('/login', login);
-router.get('/logout', logout);
+router.post('/logout', logout);
 router.get('/me', isLoggedIn, getProfile );
 router.post('/reset', forgotPassword);
 router.post('/reset/:resetToken', resetPassword);
