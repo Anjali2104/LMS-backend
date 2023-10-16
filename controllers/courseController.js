@@ -63,16 +63,37 @@ export const createCourse = async(req,res,next) => {
         },
     });
 
-    if(req.file){
-      const result = await cloudinary.v2.uploader.upload(req.file.path, {
-        folder:'lms',
-      });
-      if(result){
-        course.thumbnail.public_id = result.public_id;
-        course.thumbnail.secure_url = result.secure_url;
-      }
+    if (!course) {
+        return next(
+          new AppError('Course could not be created, please try again', 400)
+        );
+    }
 
-      fs.rm(`uploads/${req.file.filename}`);
+    if(req.file){
+     try {
+        const result = await cloudinary.v2.uploader.upload(req.file.path, {
+            folder:'lms',
+          });
+          if(result){
+            course.thumbnail.public_id = result.public_id;
+            course.thumbnail.secure_url = result.secure_url;
+          }
+    
+          fs.rm(`uploads/${req.file.filename}`); 
+     } catch (error) {
+          // Empty the uploads directory without deleting the uploads directory
+        for (const file of await fs.readdir('uploads/')) {
+          await fs.unlink(path.join('uploads/', file));
+        }
+
+      // Send the error message
+        return next(
+          new AppError(
+            JSON.stringify(error) || 'File not uploaded, please try again',
+            400
+          )
+        );
+     }
 
     }
 
@@ -82,8 +103,7 @@ export const createCourse = async(req,res,next) => {
         success:true,
         message:'Course created successfully!',
         course,
-    })
-
+    });
 
  } catch (error) {
     return next(
